@@ -1,6 +1,9 @@
-import app from "./app.js"
+import app from "./app.js";
+import { config } from "./config/index.js";
+import { runMigrations } from './db/migrate.js';
+import { closeDatabase } from './db/database.js';
 
-import { config } from "./config/index.js"
+runMigrations();
 
 const server = app.listen(config.port, () => {
     console.log(`Vaultline läuft auf http://localhost:${config.port} (${config.env})`);
@@ -9,6 +12,7 @@ const server = app.listen(config.port, () => {
 for(const signal of ["SIGINT", "SIGTERM"]){
     process.on(signal, () => {
         console.log(`${signal} empfangen, fahre herunter …`);
+        closeDatabase();
         server.close(() => process.exit(0))
     })
 }

@@ -9,5 +9,6 @@ if(!Number.isInteger(port) || port <= 0){
 export const config = Object.freeze({
     env: process.env.NODE_ENV ?? 'development',
     port,
-    isProduction: process.env.NODE_ENV === "production"
+    isProduction: process.env.NODE_ENV === "production",
+    dbPath: process.envDB_Path ?? 'data/vaultline.db',
 })
