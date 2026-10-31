@@ -1,0 +1,19 @@
+# Abhängigkeiten
+node_modules/
+
+# Umgebungsvariablen – enthalten Secrets, NIE committen
+.env
+.env.*
+!.env.example
+
+# Datenbank-Dateien
+*.sqlite
+*.db
+
+# Logs und Tests
+logs/
+*.log
+coverage/
+
+# System
+.DS_Store
