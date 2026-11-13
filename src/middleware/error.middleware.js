@@ -14,7 +14,7 @@ export function errorHandler(err, req, res, next){
       : 500;
 
     if(status >= 500){
-        console.err(err);
+        console.error(err);
     }
 
     const body = {

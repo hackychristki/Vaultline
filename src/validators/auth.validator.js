@@ -12,3 +12,11 @@ export const registerSchema = z.object({
     .min(12, 'Mindestens 12 Zeichen')
     .max(128, 'Höchstens 128 Zeichen'), // Obergrenze schützt vor extrem teurem Hashing
 });
+
+// Beim Login bewusst KEINE Regeln wie Mindestlänge prüfen: Detaillierte
+// Fehlermeldungen würden Angreifern verraten, wie Passwörter aussehen.
+// Nur grobe Grenzen, damit niemand riesige Strings schickt.
+export const loginSchema = z.object({
+  username: z.string().trim().min(1).max(30),
+  password: z.string().min(1).max(128),
+});

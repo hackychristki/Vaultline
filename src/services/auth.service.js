@@ -1,5 +1,5 @@
 import * as userModel from '../models/user.model.js';
-import { hashPassword } from '../utils/password.js';
+import { hashPassword, verifyPassword } from '../utils/password.js';
 import { HttpError } from '../utils/http-error.js';
 
 export async function register({ username, password }) {
@@ -18,4 +18,33 @@ export async function register({ username, password }) {
     }
     throw err;
   }
+}
+
+// Ein Hash, gegen den geprüft wird, wenn der Benutzer gar nicht existiert.
+// Sonst wäre die Antwort für unbekannte Namen viel schneller (kein Argon2)
+// und ein Angreifer könnte über die Zeit herausfinden, welche Namen existieren.
+// Wird einmal beim ersten Login erzeugt und dann wiederverwendet.
+let dummyHashPromise;
+function getDummyHash() {
+  dummyHashPromise ??= hashPassword('vaultline-dummy-password');
+  return dummyHashPromise;
+}
+
+// Gibt den Benutzer zurück, wenn Name und Passwort stimmen, sonst Fehler 401.
+export async function login({ username, password }) {
+  const user = userModel.findByUsername(username);
+
+  const ok = await verifyPassword(user?.password_hash ?? (await getDummyHash()), password);
+
+  // Gleiche Meldung für "Benutzer unbekannt" und "Passwort falsch"
+  if (!user || !ok) {
+    throw new HttpError(401, 'Benutzername oder Passwort falsch');
+  }
+
+  return userModel.toPublic(user);
+}
+
+export function getCurrentUser(userId) {
+  const user = userModel.findById(userId);
+  return user ? userModel.toPublic(user) : null;
 }
